@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { render } from "./renderer";
 
 export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
-  const container = new Container(hook);
+  const container = new Container(hook);//实例化容器（可订阅发布操作）
   render(
     <Executor
       onUpdate={val => {
