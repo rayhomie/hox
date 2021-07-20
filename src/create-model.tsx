@@ -28,33 +28,37 @@ export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
       depsFnRef.current?.(container.data) || [] //将全局状态store对象作为参数，执行依赖函数（找出在store对象中的依赖属性作为depsRef来缓存）
     );
 
+    //初始化容器
     useEffect(() => {
       if (!container) return;
       function subscriber(val: T) {
         if (!depsFnRef.current) {
+          //没有性能优化直接执行
           setState(val);
         } else {
-          const oldDeps = depsRef.current;
-          const newDeps = depsFnRef.current(val);
+          const oldDeps = depsRef.current; //老依赖
+          const newDeps = depsFnRef.current(val); //新依赖
           if (compare(oldDeps, newDeps)) {
+            //浅比较（如果不一样则执行）
             setState(val);
           }
-          depsRef.current = newDeps;
+          depsRef.current = newDeps; //更新为新依赖
         }
       }
-      container.subscribers.add(subscriber);
+      container.subscribers.add(subscriber); //初始化容器时进行订阅
       return () => {
-        container.subscribers.delete(subscriber);
+        container.subscribers.delete(subscriber); //摧毁容器时清除订阅
       };
     }, [container]);
-    return state!;
+    return state!; //返回容器中的全局状态
   };
   Object.defineProperty(useModel, "data", {
+    //useModel.data直接获取状态，不需要进行订阅它的更新
     get: function() {
       return container.data;
     }
   });
-  return useModel;
+  return useModel; //返回该函数
 }
 
 export function createLazyModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
