@@ -6,7 +6,10 @@ import { render } from "./renderer";
 
 export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
   const container = new Container(hook); //实例化容器（可订阅发布操作）
+  container.data = hook(hookArg); //将外部hook执行后的返回值加入到容器中（即全局store对象）
+  container.notify();
   render(
+    //必须要有渲染器，才能使用React语法
     //将元素在渲染器中渲染（模拟react-dom和react-native）
     <Executor
       onUpdate={val => {
@@ -50,14 +53,17 @@ export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
         container.subscribers.delete(subscriber); //摧毁容器时清除订阅
       };
     }, [container]);
+
     return state!; //返回容器中的全局状态
   };
+
   Object.defineProperty(useModel, "data", {
     //useModel.data直接获取状态，不需要进行订阅它的更新
     get: function() {
       return container.data;
     }
   });
+
   return useModel; //返回该函数
 }
 
