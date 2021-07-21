@@ -6,8 +6,7 @@ import { render } from "./renderer";
 
 export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
   const container = new Container(hook); //实例化容器（可订阅发布操作）
-  container.data = hook(hookArg); //将外部hook执行后的返回值加入到容器中（即全局store对象）
-  container.notify();
+
   render(
     //必须要有渲染器，才能使用React语法
     //将元素在渲染器中渲染（模拟react-dom和react-native）
