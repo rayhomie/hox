@@ -8,7 +8,7 @@ export function createModel<T, P>(hook: ModelHook<T, P>, hookArg?: P) {
   const container = new Container(hook); //实例化容器（可订阅发布操作）
 
   render(
-    //必须要有渲染器，才能使用React语法
+    //这里使用自定义渲染器兼容性更强(也可以使用react-dom，这里需要渲染器的原因是需要执行参数传进来的hook拿到状态和方法)
     //将元素在渲染器中渲染（模拟react-dom和react-native）
     <Executor
       onUpdate={val => {
